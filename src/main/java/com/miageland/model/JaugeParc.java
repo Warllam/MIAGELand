@@ -9,7 +9,7 @@ import java.util.Date;
 public class JaugeParc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private Date date;
     private Billet[] billetsVendus;
     private int jaugeMaximum;

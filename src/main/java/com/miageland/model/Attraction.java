@@ -1,15 +1,30 @@
 package com.miageland.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
+@Entity
+@Getter
+@Setter
+@Table(name = "Attraction")
 public class Attraction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private Date nom;
+
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    private String nom;
     private boolean estOuverte;
+
+    public Attraction(String pNom, boolean pEstOuverte){
+        this.nom = pNom;
+        this.estOuverte = pEstOuverte;
+    }
+
+    public Attraction() {
+    }
+
+    public void setEstOuverte(Boolean estOuverte) {
+        this.estOuverte = estOuverte;
+    }
 }
