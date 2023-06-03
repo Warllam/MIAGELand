@@ -2,7 +2,7 @@
 
 connection a la database dans terminal docker : mysql -p
 
-connection à la bd du projet : connect viebdd;
+connection à la bd du projet : connect miageland_bdd;
 
 =======
 
