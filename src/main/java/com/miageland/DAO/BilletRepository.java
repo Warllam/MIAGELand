@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface BilletRepository extends JpaRepository<Billet, Long> {
     List<Billet> findByVisiteurId(Long idVisiteur);
+
 }
