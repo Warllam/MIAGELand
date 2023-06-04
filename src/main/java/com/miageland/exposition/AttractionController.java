@@ -5,7 +5,6 @@ import com.miageland.DTO.AttractionDTO;
 import com.miageland.exception.AttractionNotFoundException;
 import com.miageland.metier.AttractionService;
 import com.miageland.model.Attraction;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

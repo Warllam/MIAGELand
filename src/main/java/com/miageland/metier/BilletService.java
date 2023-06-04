@@ -1,6 +1,5 @@
 package com.miageland.metier;
 
-import com.miageland.DAO.AttractionRepository;
 import com.miageland.DAO.BilletRepository;
 import com.miageland.DAO.VisiteurRepository;
 import com.miageland.DTO.BilletDTO;
@@ -10,10 +9,6 @@ import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -37,6 +32,7 @@ public class BilletService {
         return billet;
     }
 
+    //supprimer un billet
     public String deleteBillet(Long idBillet){
         Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
 

@@ -5,12 +5,7 @@ import com.miageland.DTO.VisiteurDTO;
 import com.miageland.exception.VisiteurNotFoundException;
 import com.miageland.metier.VisiteurService;
 import com.miageland.model.Visiteur;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.CollectionModel;
 
 import java.util.List;
 
