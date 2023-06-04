@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AttractionRepository extends JpaRepository<Attraction, Long> {
     List<Attraction> findByEstOuverte(boolean b);
+
 }
