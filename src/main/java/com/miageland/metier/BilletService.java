@@ -32,7 +32,7 @@ public class BilletService {
         return billet;
     }
 
-    //supprimer un billet - 
+    //supp billet
     public String deleteBillet(Long idBillet){
         Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
 
