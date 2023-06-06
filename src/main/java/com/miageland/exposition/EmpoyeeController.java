@@ -2,6 +2,7 @@ package com.miageland.exposition;
 
 import com.miageland.metier.EmployeeService;
 import com.miageland.model.Employee;
+import com.miageland.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +83,49 @@ public class EmpoyeeController {
         }
 
         return ResponseEntity.ok(employee.getNom());
+    }
+
+    /**
+     * recup role employee
+     * @param id
+     * @param role
+     * @return l'employee modifié
+     */
+    @PutMapping("/employee/{id}/role")
+    public ResponseEntity<Employee> updateEmployeeRole(@PathVariable int id, @PathVariable Role role) {
+        // Recup employé
+        Employee employee = employeeService.getEmployeeById(id);
+
+        // existe ?
+        if (employee == null) {
+            return null;
+        }
+
+        // Modifier le rôle de l'employé
+        employee.setRole(role);
+
+        // Maj employé
+        Employee updatedEmployee = employeeService.updateEmployee(id ,employee);
+        return ResponseEntity.ok(updatedEmployee);
+    }
+
+    /**
+     * recup role
+     * @param id
+     * @return role
+     */
+    @GetMapping("/employee/{id}/role")
+    public ResponseEntity<Role> getEmployeeRole(@PathVariable int id) {
+        // Recup employé p
+        Employee employee = employeeService.getEmployeeById(id);
+
+        // existe ?
+        if (employee == null) {
+            return null;
+        }
+        // Recup role
+        Role role = employee.getRole();
+       return ResponseEntity.ok(role);
     }
 
 }
