@@ -4,9 +4,7 @@ import com.miageland.metier.EmployeeService;
 import com.miageland.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,5 +14,74 @@ public class EmpoyeeController {
     @Autowired
     private EmployeeService employeeService;
 
+    /**
+     * Endpoint dajout employé
+     * @param employee
+     * @return
+     */
+    @PostMapping
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+        return ResponseEntity.ok(employeeService.createEmployee(employee));
+    }
+
+    /**
+     * Endpoint suppression employé
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/employee/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable int id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint update employee
+     * @param id
+     * @param employee
+     * @return l'employee mis a jour
+     */
+    @PutMapping("/employee/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
+        return ResponseEntity.ok(employeeService.updateEmployee(id, employee));
+    }
+
+    /**
+     * recup liste employee
+     * @return liste employee
+     */
+    @GetMapping
+    public ResponseEntity<List<Employee>> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.getAllEmployees());
+    }
+
+    /**
+     * recup employee avec son id
+     * @param id
+     * @return employee d'id id
+     */
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
+    }
+
+    /**
+     * recup nom employee avec id
+     * @param id
+     * @return nom employee
+     */
+    @GetMapping("/employee/{id}/name")
+    public ResponseEntity<String> getEmployeeNameById(@PathVariable int id) {
+        // Récup employé
+        Employee employee = employeeService.getEmployeeById(id);
+
+        // existe ?
+        if (employee == null) {
+            //"Employé non trouvé"
+            return null;
+        }
+
+        return ResponseEntity.ok(employee.getNom());
+    }
 
 }
