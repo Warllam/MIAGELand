@@ -91,7 +91,7 @@ public class EmpoyeeController {
      * @param role
      * @return l'employee modifié
      */
-    @PutMapping("/employee/{id}/role")
+    /*@PutMapping("/employee/{id}/role")
     public ResponseEntity<Employee> updateEmployeeRole(@PathVariable int id, @PathVariable Role role) {
         // Recup employé
         Employee employee = employeeService.getEmployeeById(id);
@@ -108,13 +108,13 @@ public class EmpoyeeController {
         Employee updatedEmployee = employeeService.updateEmployee(id ,employee);
         return ResponseEntity.ok(updatedEmployee);
     }
-
+*/
     /**
      * recup role
      * @param id
      * @return role
      */
-    @GetMapping("/employee/{id}/role")
+   /* @GetMapping("/employee/{id}/role")
     public ResponseEntity<Role> getEmployeeRole(@PathVariable int id) {
         // Recup employé p
         Employee employee = employeeService.getEmployeeById(id);
@@ -127,5 +127,5 @@ public class EmpoyeeController {
         Role role = employee.getRole();
        return ResponseEntity.ok(role);
     }
-
+*/
 }

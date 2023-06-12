@@ -75,4 +75,15 @@ public class EmployeeService {
     public void deleteEmployee(int id) {
         employeeRepository.deleteById(id);
     }
+
+    /**
+     * recip employé avec mail
+     * @param email
+     * @return
+     */
+    public boolean existEmployeeByEmail(String email) {
+        Optional<Employee> employee = employeeRepository.findByMail(email);
+        return employee.isPresent();
+    }
+
 }
