@@ -1,6 +1,9 @@
 package com.miageland.metier;
 
 import com.miageland.DAO.EmployeeRepository;
+import com.miageland.DTO.AttractionDTO;
+import com.miageland.DTO.EmployeeDTO;
+import com.miageland.model.Attraction;
 import com.miageland.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,15 +13,22 @@ import java.util.Optional;
 
 @Service
 public class EmployeeService {
-    private final EmployeeRepository employeeRepository;
+    @Autowired
+    private  EmployeeRepository employeeRepository;
+    public EmployeeService() {
+
+    }
+    /*private final EmployeeRepository employeeRepository;
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository) {
+
         this.employeeRepository = employeeRepository;
-    }
+    }*/
 
     //liste des employees
     public List<Employee> getAllEmployees() {
+
         return employeeRepository.findAll();
     }
 
@@ -38,13 +48,16 @@ public class EmployeeService {
 
     /**
      * création d'un employee
-     * @param employee
+     * @param newEmployee
      * @return l'employee créé et sauvegardé
      */
-    public Employee createEmployee(Employee employee) {
-        return this.employeeRepository.save(employee);
+    public Employee newEmployee(EmployeeDTO newEmployee) {
+        Employee e =new Employee(newEmployee.getNom(),newEmployee.getPrenom(), newEmployee.getMail(),newEmployee.getRole());
+        this.employeeRepository.save(e);
+        return e;
         //return "Création ok";
     }
+
 
     /**
      * modif informations d'un employee grace a son id

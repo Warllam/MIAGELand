@@ -2,8 +2,11 @@ package com.miageland.model;
 import jakarta.persistence.*;
 
 
-@Entity public class Employee {
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+@Entity
+@Table(name = "Employee")
+public class Employee {
+    private @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String nom;
     private String prenom;
     private String mail;

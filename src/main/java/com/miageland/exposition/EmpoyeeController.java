@@ -1,9 +1,13 @@
 package com.miageland.exposition;
 
+import com.miageland.DTO.AttractionDTO;
+import com.miageland.DTO.EmployeeDTO;
 import com.miageland.metier.EmployeeService;
+import com.miageland.model.Attraction;
 import com.miageland.model.Employee;
 import com.miageland.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +24,13 @@ public class EmpoyeeController {
      * @param employee
      * @return
      */
-    @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        return ResponseEntity.ok(employeeService.createEmployee(employee));
+    @PostMapping(consumes = "application/json;charset=UTF-8")
+    public ResponseEntity<Employee> createEmployee(@RequestBody EmployeeDTO employee) {
+        Employee e = employeeService.newEmployee(employee);
+        return ResponseEntity.status(HttpStatus.CREATED).body(e);
     }
+
+
 
     /**
      * Endpoint suppression employé
