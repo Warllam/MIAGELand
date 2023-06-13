@@ -3,17 +3,17 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "Employee")
-public class Employee {
+@Table(name = "Employe")
+public class Employe {
     private @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) int id;
     private String nom;
     private String prenom;
     private String mail;
     private Role role;
 
     // Constructeur
-    public Employee( String nom, String prenom, String mail, Role role) {
+    public Employe(String nom, String prenom, String mail, Role role) {
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
@@ -21,7 +21,7 @@ public class Employee {
     }
 
     // Constructeur
-    public Employee() {}
+    public Employe() {}
 
     // Getters and setters
     public long getId() {

@@ -1,5 +1,5 @@
 package com.miageland.metier;
 //inutile
-public class EmployeeAutService {
+public class EmployeAutService {
     private String email;
 }

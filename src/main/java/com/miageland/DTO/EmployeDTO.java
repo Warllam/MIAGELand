@@ -5,7 +5,7 @@ import com.miageland.model.Role;
 import lombok.Getter;
 
 @Getter
-public class EmployeeDTO {
+public class EmployeDTO {
     @JsonIgnoreProperties
     private int id;
     @JsonIgnoreProperties
@@ -15,7 +15,7 @@ public class EmployeeDTO {
     @JsonIgnoreProperties
     private String mail;
     @JsonIgnoreProperties
-    private Role role;
+    private String role;
 
     /*public EmployeeDTO(int id, String nom, String prenom, String mail, Role role) {
         this.id = id;

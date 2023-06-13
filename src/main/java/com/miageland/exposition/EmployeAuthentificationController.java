@@ -1,7 +1,7 @@
 package com.miageland.exposition;
 
-import com.miageland.metier.EmployeeService;
-import com.miageland.model.Employee;
+import com.miageland.metier.EmployeService;
+import com.miageland.model.Employe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
-public class EmployeeAuthentificationController {
+public class EmployeAuthentificationController {
     @Autowired
-    private EmployeeService employeeService;
+    private EmployeService employeService;
 
     /**
      *
@@ -21,10 +21,10 @@ public class EmployeeAuthentificationController {
      * @return authentification ok ou non
      */
     @PostMapping("/authentification")
-    public ResponseEntity<String> authentification(@RequestBody Employee authenticationRequest) {
+    public ResponseEntity<String> authentification(@RequestBody Employe authenticationRequest) {
 
         //  existe?
-        boolean exists = employeeService.existEmployeeByEmail(authenticationRequest.getMail());
+        boolean exists = employeService.existEmployeByEmail(authenticationRequest.getMail());
 
         if (exists) {
             // L'employé existe
