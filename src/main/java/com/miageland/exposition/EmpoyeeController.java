@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/employee")
 public class EmpoyeeController {
     @Autowired
     private EmployeeService employeeService;
@@ -37,7 +37,7 @@ public class EmpoyeeController {
      * @param id
      * @return
      */
-    @DeleteMapping("/employee/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable int id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.ok().build();
@@ -49,7 +49,7 @@ public class EmpoyeeController {
      * @param employee
      * @return l'employee mis a jour
      */
-    @PutMapping("/employee/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
         return ResponseEntity.ok(employeeService.updateEmployee(id, employee));
     }
@@ -68,7 +68,7 @@ public class EmpoyeeController {
      * @param id
      * @return employee d'id id
      */
-    @GetMapping("/employee/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
@@ -78,7 +78,7 @@ public class EmpoyeeController {
      * @param id
      * @return nom employee
      */
-    @GetMapping("/employee/{id}/name")
+    @GetMapping("/{id}/name")
     public ResponseEntity<String> getEmployeeNameById(@PathVariable int id) {
         // Récup employé
         Employee employee = employeeService.getEmployeeById(id);
