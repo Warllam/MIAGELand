@@ -3,6 +3,8 @@ package com.miageland.exposition;
 import com.miageland.DTO.EmployeDTO;
 import com.miageland.metier.EmployeService;
 import com.miageland.model.Employe;
+import com.miageland.model.Role;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/employe")
 public class EmpoyeController {
     @Autowired
     private EmployeService employeService;
@@ -70,6 +72,39 @@ public class EmpoyeController {
         return ResponseEntity.ok(employeService.getEmployeById(id));
     }
 
+    /**
+     * connexion et def role session
+     * @param mail
+     * @param session
+     * @return ok
+     */
+    @PostMapping("/connexion")
+    public ResponseEntity<String> loginEmployeeByMail(@RequestBody String mail, HttpSession session){
+        Employe employe=this.employeService.getEmployeByMail(mail);
+        /*return employe;
+        switch (employe.getRole()) {
+            case ADMINISTRATEUR:
+                session.setAttribute("Role",Role.ADMINISTRATEUR);
+                break;
+            case GERANT:
+                session.setAttribute("Role",Role.GERANT);
+                break;
+            //par defaut on attribue le role d'employee
+            default:
+                session.setAttribute("Role",Role.EMPLOYEE);
+                break;
+        }*/
+        session.setAttribute("Role",employe.getId() );
+        return ResponseEntity.ok("connexion ok avec le mail : "+mail);
+    }
+
+    @PostMapping("/connexion/{id}")
+    public ResponseEntity<String> loginEmployeeByID(@PathVariable int id, HttpSession session){
+        Employe employe=this.employeService.getEmployeById(id);
+        session.setAttribute("Role",employe.getRole() );
+        return ResponseEntity.ok("connexion ok avec l'id : "+ id + " de role "+ employe.getRole());
+    }
+    //fonction supp
     /**
      * recup nom employee avec id
      * @param id

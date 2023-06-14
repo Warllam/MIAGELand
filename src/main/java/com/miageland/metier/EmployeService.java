@@ -109,12 +109,17 @@ public class EmployeService {
 
     /**
      * recup employé avec mail verifie qu'il existe
-     * @param email
+     * @param mail
      * @return
      */
-    public boolean existEmployeByEmail(String email) {
-        Optional<Employe> employee = employeRepository.findByMail(email);
-        return employee.isPresent();
+    public boolean existEmployeByEmail(String mail) {
+        Optional<Employe> employe = employeRepository.findByMail(mail);
+        return employe.isPresent();
+    }
+
+    public Employe getEmployeByMail(String mail) {
+       Employe employee = this.employeRepository.getEmployeByMail(mail);
+        return employee;
     }
 
 }
