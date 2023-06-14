@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/employe")
-public class EmpoyeController {
+public class EmployeController {
     @Autowired
     private EmployeService employeService;
 
@@ -37,7 +37,7 @@ public class EmpoyeController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable int id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeService.deleteEmploye(id);
         return ResponseEntity.ok().build();
     }
@@ -49,7 +49,7 @@ public class EmpoyeController {
      * @return l'employe mis a jour
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Employe> updateEmployee(@PathVariable int id, @RequestBody EmployeDTO employe) {
+    public ResponseEntity<Employe> updateEmployee(@PathVariable Long id, @RequestBody EmployeDTO employe) {
         return ResponseEntity.ok(employeService.updateEmploye(id, employe));
     }
 
@@ -68,7 +68,7 @@ public class EmpoyeController {
      * @return employee d'id id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Employe> getEmployeeById(@PathVariable int id) {
+    public ResponseEntity<Employe> getEmployeeById(@PathVariable Long id) {
         return ResponseEntity.ok(employeService.getEmployeById(id));
     }
 
@@ -79,7 +79,8 @@ public class EmpoyeController {
      * @return ok
      */
     @PostMapping("/connexion")
-    public ResponseEntity<String> loginEmployeeByMail(@RequestBody String mail, HttpSession session){
+    public ResponseEntity<String> loginEmployeeByMail(@RequestBody EmployeDTO employeParameter, HttpSession session){
+        String mail = employeParameter.getMail();
         Employe employe=this.employeService.getEmployeByMail(mail);
         /*return employe;
         switch (employe.getRole()) {
@@ -99,7 +100,7 @@ public class EmpoyeController {
     }
 
     @PostMapping("/connexion/{id}")
-    public ResponseEntity<String> loginEmployeeByID(@PathVariable int id, HttpSession session){
+    public ResponseEntity<String> loginEmployeeByID(@PathVariable Long id, HttpSession session){
         Employe employe=this.employeService.getEmployeById(id);
         session.setAttribute("Role",employe.getRole() );
         return ResponseEntity.ok("connexion ok avec l'id : "+ id + " de role "+ employe.getRole());
@@ -111,7 +112,7 @@ public class EmpoyeController {
      * @return nom employee
      */
     @GetMapping("/{id}/name")
-    public ResponseEntity<String> getEmployeeNameById(@PathVariable int id) {
+    public ResponseEntity<String> getEmployeeNameById(@PathVariable Long id) {
         // Récup employé
         Employe employe = employeService.getEmployeById(id);
 

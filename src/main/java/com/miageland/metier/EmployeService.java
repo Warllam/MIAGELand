@@ -31,7 +31,7 @@ public class EmployeService {
      * @param id
      * @return l'employe
      */
-    public Employe getEmployeById(int id) {
+    public Employe getEmployeById(Long id) {
         Optional<Employe> employee = employeRepository.findById(id);
         if (employee.isPresent()) {
             return employee.get();
@@ -72,7 +72,7 @@ public class EmployeService {
      * @param updatedEmploye
      * @return l'employee modifié
      */
-    public Employe updateEmploye(int id, EmployeDTO updatedEmploye) {
+    public Employe updateEmploye(Long id, EmployeDTO updatedEmploye) {
         Optional<Employe> employee = employeRepository.findById(id);
 
         if (employee.isPresent()) {
@@ -103,7 +103,7 @@ public class EmployeService {
      * supprime un employee grace a son id
      * @param id
      */
-    public void deleteEmploye(int id) {
+    public void deleteEmploye(Long id) {
         employeRepository.deleteById(id);
     }
 
