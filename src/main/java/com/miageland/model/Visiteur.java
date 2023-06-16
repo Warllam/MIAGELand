@@ -28,4 +28,14 @@ public class Visiteur {
 
     public Visiteur() {
     }
+
+    public int nombreVisites() {
+        int nbVisites = 0;
+        for (Billet billet : billetsVisiteur) {
+            if (billet.getEtatBillet() == EtatBillet.UTILISE) {
+                nbVisites ++;
+            }
+        }
+        return nbVisites;
+    }
 }
