@@ -4,6 +4,7 @@ import com.miageland.DAO.JaugeParcRepository;
 import com.miageland.DAO.VisiteurRepository;
 import com.miageland.DTO.JaugeParcDTO;
 import com.miageland.exception.JaugeParcNotFoundException;
+import com.miageland.exception.VisiteurNotFoundException;
 import com.miageland.model.JaugeParc;
 import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class JaugeParcService {
      * @return le nombre de billets vendus pour une date/jauge Parc
      */
     public int consulterVentesJour (Date date) {
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsVendus();
     }
 
@@ -45,13 +46,13 @@ public class JaugeParcService {
      * @param date la date pour la jauge
      */
     public JaugeParc setJaugeParcMax(int nbVisiteurMax, Date date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         jaugeParc.setJaugeMaximum(nbVisiteurMax);
         return jaugeParc;
     }
 
     public int getJaugeParcMax(Date date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getJaugeMaximum();
     }
 
@@ -60,7 +61,7 @@ public class JaugeParcService {
      * @return les recettes du jour
      */
     public int recetteQuotidienne(Date date) {
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getRecetteJour();
     }
 
@@ -69,7 +70,7 @@ public class JaugeParcService {
      * @return le nombre de billets annulés sur la journée
      */
     public int consulterBilletsAnnules(Date date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsAnnules();
     }
 
@@ -78,7 +79,7 @@ public class JaugeParcService {
      * @return le nombre de reservations qui ne sont pas encore payées
      */
     public int consulterNbReserveNonPaye(Date date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException("Could not find jaugeParc for the date " + date));
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsReserveNonPaye();
     }
 
@@ -89,23 +90,8 @@ public class JaugeParcService {
     public int nbVisiteVisiteur(Long idVisiteur){
         Visiteur visiteur = visiteurRepository.getReferenceById(idVisiteur);
         if (visiteur == null){
-            throw new JaugeParcNotFoundException("Visiteur non trouvé, impossible de récupérer le nombre de visites");
+            throw new VisiteurNotFoundException(idVisiteur);
         }
         return visiteur.nombreVisites();
     }
-
-
-    //nb visites visiteurs
-
-    //return tous les jauge parc
-    //return une jauge parc selon date
-    //creation jauge parc
-
-    //recup nb billets vendus
-    // Get et set jauge max
-    //get recette jour
-    //get nb billets annul
-    //get reserv non paye
-
-
 }

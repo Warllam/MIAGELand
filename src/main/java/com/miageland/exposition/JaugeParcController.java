@@ -61,7 +61,7 @@ public class JaugeParcController {
      * @param date souhaitée
      * @return le nombre de billets vendus sur le jour souhaité
      */
-    @GetMapping("/{date}/ventesJour")
+    @GetMapping("/ventesJour/{date}")
     int billetsVendusJour(@PathVariable Date date){
         return this.jaugeParcService.consulterVentesJour(date);
     }
@@ -71,7 +71,7 @@ public class JaugeParcController {
      * @param date du jour souhaité
      * @return la jauge de capacité max pour ce jour
      */
-    @GetMapping("/{date}/jaugeMax")
+    @GetMapping("/jaugeMax/{date}")
     int jaugeCapaciteMax(@PathVariable Date date){
         return this.jaugeParcService.getJaugeParcMax(date);
     }
@@ -81,7 +81,7 @@ public class JaugeParcController {
      * @param date du jour à modifier
      * @param maJauge nouvelle jauge max
      */
-    @PutMapping("/{date}/jaugeMax")
+    @PutMapping("/jaugeMax/{date}")
     public ResponseEntity<JaugeParc> updateJaugeParcCapacite(@PathVariable Date date, @RequestBody int maJauge) {
         JaugeParc jaugeParc = repository.findById(date)
                 .orElseThrow(() -> new JaugeParcNotFoundException(date));
@@ -95,7 +95,7 @@ public class JaugeParcController {
      * @param date du jour souhaité
      * @return les recettes du jour
      */
-    @GetMapping("/{date}/recette")
+    @GetMapping("/recette/{date}")
     int recetteJour(@PathVariable Date date){
         return this.jaugeParcService.recetteQuotidienne(date);
     }
@@ -105,7 +105,7 @@ public class JaugeParcController {
      * @param date du jour souhaité
      * @return le nombre de billets annulés du jour
      */
-    @GetMapping("/{date}/annulations")
+    @GetMapping("/annulations/{date}")
     int consulterBilletsAnnules(@PathVariable Date date){
         return this.jaugeParcService.consulterBilletsAnnules(date);
     }
@@ -115,7 +115,7 @@ public class JaugeParcController {
      * @param date du jour souhaité
      * @return le nombre de billets réservés mais non payés
      */
-    @GetMapping("/{date}/reserveNonPaye")
+    @GetMapping("/reserveNonPaye/{date}")
     int consulterBilletsReserveNonPaye(@PathVariable Date date){
         return this.jaugeParcService.consulterNbReserveNonPaye(date);
     }
@@ -125,18 +125,8 @@ public class JaugeParcController {
      * @param idVisiteur du visiteur
      * @return le nombre de visites qu'il a effectuées
      */
-    @GetMapping("/{idVisiteur}/nbVisiteVisiteur")
+    @GetMapping("/nbVisiteVisiteur/{idVisiteur}")
     int consulterNbVisitesVisiteur(@PathVariable Long idVisiteur){
         return this.jaugeParcService.nbVisiteVisiteur(idVisiteur);
     }
-
-    //return tous les jauge parc
-    //return une jauge parc selon date
-    //creation jauge parc
-    //recup nb billets vendus
-    // Get et set jauge max
-    //get recette jour
-    //get nb billets annul
-    //get reserv non paye
-    //nb visites visiteurs
 }
