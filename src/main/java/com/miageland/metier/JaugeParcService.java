@@ -32,12 +32,18 @@ public class JaugeParcService {
         return jaugeParc;
     }
 
+    public JaugeParc newJaugeParc(LocalDate date){
+        JaugeParc jaugeParc = new JaugeParc(date);
+        this.jaugeParcRepository.save(jaugeParc);
+        return jaugeParc;
+    }
+
     /**
      * @param date souhaitée
      * @return le nombre de billets vendus pour une date/jauge Parc
      */
     public int consulterVentesJour (LocalDate date) {
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         return jaugeParc.getBilletsVendus();
     }
 
@@ -47,13 +53,13 @@ public class JaugeParcService {
      * @param date la date pour la jauge
      */
     public JaugeParc setJaugeParcMax(int nbVisiteurMax, LocalDate date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         jaugeParc.setJaugeMaximum(nbVisiteurMax);
         return jaugeParc;
     }
 
     public int getJaugeParcMax(LocalDate date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         return jaugeParc.getJaugeMaximum();
     }
 
@@ -62,7 +68,7 @@ public class JaugeParcService {
      * @return les recettes du jour
      */
     public int recetteQuotidienne(LocalDate date) {
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         return jaugeParc.getRecetteJour();
     }
 
@@ -71,7 +77,7 @@ public class JaugeParcService {
      * @return le nombre de billets annulés sur la journée
      */
     public int consulterBilletsAnnules(LocalDate date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         return jaugeParc.getBilletsAnnules();
     }
 
@@ -80,7 +86,7 @@ public class JaugeParcService {
      * @return le nombre de reservations qui ne sont pas encore payées
      */
     public int consulterNbReserveNonPaye(LocalDate date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         return jaugeParc.getBilletsReserveNonPaye();
     }
 
@@ -93,11 +99,40 @@ public class JaugeParcService {
         if (visiteur == null){
             throw new VisiteurNotFoundException(idVisiteur);
         }
-        return visiteur.nombreVisites();
+        return visiteur.getNbVisites();
+    }
+
+    public JaugeParc getJaugeParc(LocalDate date){
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        //Si la jaugeParc n'existe pas on la créee
+        if (jaugeParc == null) {
+            jaugeParc = newJaugeParc(date);
+        }
+        return jaugeParc;
     }
 
     public void incrementerBilletsVendus(LocalDate date){
-        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        JaugeParc jaugeParc = getJaugeParc(date);
         jaugeParc.setBilletsVendus(jaugeParc.getBilletsVendus() + 1);
+        jaugeParc.setBilletsReserveNonPaye(jaugeParc.getBilletsReserveNonPaye() -1);
+        this.jaugeParcRepository.save(jaugeParc);
+    }
+
+    public void incrementerBilletAnnules(LocalDate date){
+        JaugeParc jaugeParc = getJaugeParc(date);
+        jaugeParc.setBilletsAnnules(jaugeParc.getBilletsAnnules() + 1);
+        this.jaugeParcRepository.save(jaugeParc);
+    }
+
+    public void incrementerBilletReserveNonPaye(LocalDate date){
+        JaugeParc jaugeParc = getJaugeParc(date);
+        jaugeParc.setBilletsReserveNonPaye(jaugeParc.getBilletsReserveNonPaye() + 1);
+        this.jaugeParcRepository.save(jaugeParc);
+    }
+
+    public void decrementerBilletReserveNonPaye(LocalDate date){
+        JaugeParc jaugeParc = getJaugeParc(date);
+        jaugeParc.setBilletsReserveNonPaye(jaugeParc.getBilletsReserveNonPaye() - 1);
+        this.jaugeParcRepository.save(jaugeParc);
     }
 }

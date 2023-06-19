@@ -47,9 +47,9 @@ public class BilletController {
         return billet;
     }
 
-    @DeleteMapping("{id}")
+    @PutMapping("{id}/annuler")
     String deleteBillet(@PathVariable Long id) {
-        return this.billetService.deleteBillet(id);
+        return this.billetService.annulerBillet(id);
     }
 
     @PutMapping("{id}/paiement")

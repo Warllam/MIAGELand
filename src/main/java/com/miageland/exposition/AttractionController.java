@@ -15,18 +15,15 @@ import java.util.List;
 @RequestMapping("/attractions")
 public class AttractionController {
 
-    private final AttractionRepository attractionRepository;
     private final AttractionService attractionService;
 
     public AttractionController(AttractionRepository attractionRepository, AttractionService attractionService) {
-        this.attractionRepository = attractionRepository;
         this.attractionService = attractionService;
     }
 
     @GetMapping
     public ResponseEntity<List<Attraction>> getAllAttractions() {
-        List<Attraction> attractions = attractionRepository.findAll();
-        return ResponseEntity.ok(attractions);
+        return ResponseEntity.ok(this.attractionService.getAllAttractions());
     }
 
     @PostMapping(consumes = "application/json;charset=UTF-8")
@@ -35,19 +32,28 @@ public class AttractionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(attraction);
     }
 
-    @PutMapping("/{id}/ouverture")
-    public ResponseEntity<Attraction> updateAttractionOuverture(@PathVariable Long id, @RequestBody boolean estOuverte) {
-        Attraction attraction = attractionRepository.findById(id)
-                .orElseThrow(() -> new AttractionNotFoundException(id));
-
-        Attraction updatedAttraction = attractionService.setAttractionOuverture(attraction, estOuverte);
-        return ResponseEntity.ok(updatedAttraction);
+    @PutMapping("/{id}/setOuverture")
+    public ResponseEntity<Attraction> updateAttractionOuverture(@PathVariable Long id, @RequestParam("estOuverte") boolean estOuverte) {
+        try{
+            return ResponseEntity.ok(this.attractionService.updateAttraction(id,estOuverte));
+         } catch (AttractionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+         }
     }
 
     @GetMapping("/ouvertes")
     public ResponseEntity<List<Attraction>> getAttractionsOuvertes() {
-        List<Attraction> attractionsOuvertes = attractionRepository.findByEstOuverte(true);
-        return ResponseEntity.ok(attractionsOuvertes);
+        return ResponseEntity.ok(this.attractionService.getAttractionsOuvertes());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Attraction> deleteAttraction(@PathVariable Long id) {
+        try{
+            attractionService.deleteAttraction(id);
+            return ResponseEntity.ok().build();
+        } catch (AttractionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

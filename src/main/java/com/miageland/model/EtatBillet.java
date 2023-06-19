@@ -1,7 +1,7 @@
 package com.miageland.model;
 
 public enum EtatBillet {
-    ANNULER,
+    ANNULE,
     ATTENTE,
     VALIDE,
     UTILISE,

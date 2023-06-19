@@ -40,24 +40,30 @@ public class BilletService {
         }
         Billet billet = new Billet(newBilletParameter.getDateValidite(), newBilletParameter.getPrix(), newBilletParameter.getDateVente(), visiteur);
         this.billetRepository.save(billet);
+        this.jaugeParcService.incrementerBilletReserveNonPaye(billet.getDateValidite());
         return billet;
     }
 
-    public String deleteBillet(Long idBillet){
+    public String annulerBillet(Long idBillet){
         Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
 
-        // Récupérer la date actuelle et enleve 7 jours
-        Date dateActuelle = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateActuelle);
-        calendar.add(Calendar.DAY_OF_MONTH, -7);
-        Date dateMoins7Jours = calendar.getTime();
+        // Récupérer la date actuelle et enlever 7 jours
+        LocalDate dateActuelle = LocalDate.now().minusDays(7);
 
-        if (dateMoins7Jours.after(billet.getDateValidite())){
-            throw new IllegalStateException("Impossible de supprimer un billet à moins de 7 jours de la date de Validité");
-        }else{
-            String message = "Billet remboursé : "+billet.getPrix();
-            this.billetRepository.deleteById(idBillet);
+        if (dateActuelle.isAfter(billet.getDateValidite())) {
+            throw new IllegalStateException("Impossible de supprimer un billet à moins de 7 jours de la date de validité");
+        } else {
+            String message;
+            if(billet.isEstPaye()){
+                message = "Billet annulé et remboursé : " + billet.getPrix();
+                this.jaugeParcService.incrementerBilletAnnules(billet.getDateValidite());
+            }else{
+                message = "Billet non payé annulé";
+                this.jaugeParcService.decrementerBilletReserveNonPaye(billet.getDateValidite());
+            }
+            billet.setEtatBillet(EtatBillet.ANNULE);
+            this.billetRepository.save(billet);
+
             return message;
         }
     }
@@ -68,29 +74,31 @@ public class BilletService {
             throw new IllegalStateException("Le billet est déjà payé");
         }else{
             billet.setEstPaye(true);
+            billet.setEtatBillet(EtatBillet.VALIDE);
             this.billetRepository.save(billet);
+            this.jaugeParcService.incrementerBilletsVendus(billet.getDateValidite());
+
             return "Billet payé";
         }
     }
 
     public Billet validerBillet(Long idBillet){
         Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
-        Date date = new Date();
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        if(billet.getEtatBillet() != EtatBillet.VALIDE){
-            throw new BilletException("Billet non valide : "+billet.getEtatBillet());
-        }else{
-            if (billet.getDateValidite().compareTo(date) < 0) {
+        LocalDate localDate = LocalDate.now();
+
+        if (billet.getEtatBillet() != EtatBillet.VALIDE) {
+            throw new BilletException("Billet non valide : " + billet.getEtatBillet());
+        } else {
+            if (billet.getDateValidite().isBefore(localDate)) {
                 throw new BilletException("Billet périmé");
-            }else{
-                if( this.jaugeParcService.consulterVentesJour(localDate) >= this.jaugeParcService.getJaugeParcMax(localDate)){
-                    throw new BilletException("La jauge du parc est atteinte");
-                }
+            /*} else {
+                if (this.jaugeParcService.consulterVentesJour(localDate) >= this.jaugeParcService.getJaugeParcMax(localDate)) {
+                     throw new BilletException("La jauge du parc est atteinte");
+                }*/
             }
         }
 
         billet.setEtatBillet(EtatBillet.UTILISE);
-        billet.setDateVisite(date);
 
         this.jaugeParcService.incrementerBilletsVendus(localDate);
         this.billetRepository.save(billet);

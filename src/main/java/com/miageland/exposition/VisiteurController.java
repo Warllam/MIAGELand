@@ -13,34 +13,26 @@ import java.util.List;
 @RestController
 public class VisiteurController {
 
-    private final VisiteurRepository repository;
     private final VisiteurService visiteurService;
 
-    public VisiteurController(VisiteurRepository repository, VisiteurService visiteurService) {
-        this.repository = repository;
+    public VisiteurController(VisiteurService visiteurService) {
         this.visiteurService = visiteurService;
     }
 
     @GetMapping("/visiteurs")
     List<Visiteur> all() {
-        List<Visiteur> visiteurs = repository.findAll();
-        return visiteurs;
+        return this.visiteurService.getAllVisiteurs();
     }
 
     @GetMapping("/visiteurs/{id}")
     Visiteur one(@PathVariable Long id){
-        return this.repository.getReferenceById(id);
+        return this.visiteurService.getVisiteurById(id);
     }
 
     @DeleteMapping("/visiteurs/{id}")
     void deletePatientUser(@PathVariable Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-        } else {
-            throw new VisiteurNotFoundException(id);
-        }
+        this.visiteurService.deleteVisiteurById(id);
     }
-
 
     @PostMapping(value = "/visiteurs", consumes = "application/json;charset=UTF-8")
     Visiteur newVisiteur(@RequestBody VisiteurDTO newVisiteurParameter) {
