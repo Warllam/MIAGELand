@@ -56,5 +56,16 @@ public class BilletService {
         }
     }
 
+    public String payerBillet(Long idBillet){
+        Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
+        if(billet.isEstPaye()){
+            throw new IllegalStateException("Le billet est déjà payé");
+        }else{
+            billet.setEstPaye(true);
+            this.billetRepository.save(billet);
+            return "Billet payé";
+        }
+    }
+
 
 }

@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Calendar;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/billets")
 public class BilletController {
 
     private final BilletRepository repository;
     private final BilletService billetService;
 
-    private BilletController(BilletRepository repository, BilletService billetService) {
+    public BilletController(BilletRepository repository, BilletService billetService) {
         this.repository = repository;
         this.billetService = billetService;
     }
@@ -30,8 +30,13 @@ public class BilletController {
         return billets;
     }
 
-    @GetMapping("{idVisiteur}")
-    List<Billet> allByIdVisiteur(Long idVisiteur) {
+    @GetMapping("{id}")
+    Billet getBilletById(@PathVariable Long id) {
+        return repository.findById(id).orElseThrow(() -> new BilletException("Could not find billet " + id));
+    }
+
+    @GetMapping("user/{idVisiteur}")
+    List<Billet> allByIdVisiteur(@PathVariable Long idVisiteur) {
         List<Billet> billets = repository.findByVisiteurId(idVisiteur);
         return billets;
     }
@@ -45,5 +50,10 @@ public class BilletController {
     @DeleteMapping("{id}")
     String deleteBillet(@PathVariable Long id) {
         return this.billetService.deleteBillet(id);
+    }
+
+    @PutMapping("{id}/paiement")
+    String payerBillet(@PathVariable Long id) {
+        return this.billetService.payerBillet(id);
     }
 }
