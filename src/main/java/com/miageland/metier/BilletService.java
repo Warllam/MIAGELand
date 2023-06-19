@@ -1,14 +1,22 @@
 package com.miageland.metier;
 
+import com.miageland.DAO.AttractionRepository;
 import com.miageland.DAO.BilletRepository;
+import com.miageland.DAO.JaugeParcRepository;
 import com.miageland.DAO.VisiteurRepository;
 import com.miageland.DTO.BilletDTO;
 import com.miageland.exception.BilletException;
 import com.miageland.model.Billet;
+import com.miageland.model.EtatBillet;
 import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -20,6 +28,9 @@ public class BilletService {
 
     @Autowired
     private VisiteurRepository visiteurRepository;
+    @Autowired
+    private JaugeParcService jaugeParcService;
+
     public BilletService(){}
 
     public Billet newBillet(BilletDTO newBilletParameter){
@@ -32,7 +43,6 @@ public class BilletService {
         return billet;
     }
 
-    //supp billet
     public String deleteBillet(Long idBillet){
         Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
 
@@ -61,6 +71,30 @@ public class BilletService {
             this.billetRepository.save(billet);
             return "Billet payé";
         }
+    }
+
+    public Billet validerBillet(Long idBillet){
+        Billet billet = billetRepository.findById(idBillet).orElseThrow(() -> new BilletException("Could not find billet " + idBillet));
+        Date date = new Date();
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if(billet.getEtatBillet() != EtatBillet.VALIDE){
+            throw new BilletException("Billet non valide : "+billet.getEtatBillet());
+        }else{
+            if (billet.getDateValidite().compareTo(date) < 0) {
+                throw new BilletException("Billet périmé");
+            }else{
+                if( this.jaugeParcService.consulterVentesJour(localDate) >= this.jaugeParcService.getJaugeParcMax(localDate)){
+                    throw new BilletException("La jauge du parc est atteinte");
+                }
+            }
+        }
+
+        billet.setEtatBillet(EtatBillet.UTILISE);
+        billet.setDateVisite(date);
+
+        this.jaugeParcService.incrementerBilletsVendus(localDate);
+        this.billetRepository.save(billet);
+        return billet;
     }
 
 
