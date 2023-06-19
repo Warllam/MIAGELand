@@ -18,7 +18,6 @@ public class Billet {
     private float prix;
     private EtatBillet etatBillet;
     private Date dateVente;
-    private Date dateVisite;
     private boolean estPaye;
     @ManyToOne
     @JoinColumn(name = "visiteur_id")

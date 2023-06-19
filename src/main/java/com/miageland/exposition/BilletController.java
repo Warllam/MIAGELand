@@ -2,6 +2,7 @@ package com.miageland.exposition;
 
 import com.miageland.DAO.BilletRepository;
 import com.miageland.DTO.BilletDTO;
+import com.miageland.exception.BilletException;
 import com.miageland.metier.BilletService;
 import com.miageland.model.Billet;
 import org.springframework.web.bind.annotation.*;
