@@ -5,6 +5,8 @@ import com.miageland.DTO.BilletDTO;
 import com.miageland.exception.BilletException;
 import com.miageland.metier.BilletService;
 import com.miageland.model.Billet;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -45,5 +47,16 @@ public class BilletController {
     @DeleteMapping("{id}")
     String deleteBillet(@PathVariable Long id) {
         return this.billetService.deleteBillet(id);
+    }
+
+    @PutMapping("{id}/valider")
+    ResponseEntity<String> validerBillet(@PathVariable Long id) {
+        try {
+            this.billetService.validerBillet(id);
+            return ResponseEntity.ok("Billet validé avec succès.");
+        } catch (BilletException e) {
+            String errorMessage = "Erreur lors de la validation du billet : " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
     }
 }

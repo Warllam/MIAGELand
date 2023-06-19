@@ -8,13 +8,13 @@ import com.miageland.model.JaugeParc;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/jaugeParc")
 public class JaugeParcController {
-
 
     private final JaugeParcRepository repository;
     private final JaugeParcService jaugeParcService;
@@ -25,7 +25,6 @@ public class JaugeParcController {
     }
 
     /**
-     *
      * @return la liste de toutes les JaugeParc
      */
     @GetMapping
@@ -35,18 +34,17 @@ public class JaugeParcController {
     }
 
     /**
-     *
      * @param date de la jauge parc voulue
      * @return la JaugeParc
      */
     @GetMapping("/{date}")
-    JaugeParc oneDate(@PathVariable Date date){
-        return this.repository.getReferenceById(date);
+    JaugeParc oneDate(@PathVariable LocalDate date){
+        JaugeParc jaugeParc = repository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        return jaugeParc;
     }
 
 
     /**
-     *
      * @param newJaugeParcParameter les paramètres de la Jauge Parc
      * @return JaugeParc créée
      */
@@ -56,13 +54,14 @@ public class JaugeParcController {
         return jaugeParc;
     }
 
+
+
     /**
-     *
      * @param date souhaitée
      * @return le nombre de billets vendus sur le jour souhaité
      */
     @GetMapping("/ventesJour/{date}")
-    int billetsVendusJour(@PathVariable Date date){
+    int billetsVendusJour(@PathVariable LocalDate date){
         return this.jaugeParcService.consulterVentesJour(date);
     }
 
@@ -72,7 +71,7 @@ public class JaugeParcController {
      * @return la jauge de capacité max pour ce jour
      */
     @GetMapping("/jaugeMax/{date}")
-    int jaugeCapaciteMax(@PathVariable Date date){
+    int jaugeCapaciteMax(@PathVariable LocalDate date){
         return this.jaugeParcService.getJaugeParcMax(date);
     }
 
@@ -82,7 +81,7 @@ public class JaugeParcController {
      * @param maJauge nouvelle jauge max
      */
     @PutMapping("/jaugeMax/{date}")
-    public ResponseEntity<JaugeParc> updateJaugeParcCapacite(@PathVariable Date date, @RequestBody int maJauge) {
+    public ResponseEntity<JaugeParc> updateJaugeParcCapacite(@PathVariable LocalDate date, @RequestBody int maJauge) {
         JaugeParc jaugeParc = repository.findById(date)
                 .orElseThrow(() -> new JaugeParcNotFoundException(date));
 
@@ -96,7 +95,7 @@ public class JaugeParcController {
      * @return les recettes du jour
      */
     @GetMapping("/recette/{date}")
-    int recetteJour(@PathVariable Date date){
+    int recetteJour(@PathVariable LocalDate date){
         return this.jaugeParcService.recetteQuotidienne(date);
     }
 
@@ -106,7 +105,7 @@ public class JaugeParcController {
      * @return le nombre de billets annulés du jour
      */
     @GetMapping("/annulations/{date}")
-    int consulterBilletsAnnules(@PathVariable Date date){
+    int consulterBilletsAnnules(@PathVariable LocalDate date){
         return this.jaugeParcService.consulterBilletsAnnules(date);
     }
 
@@ -116,7 +115,7 @@ public class JaugeParcController {
      * @return le nombre de billets réservés mais non payés
      */
     @GetMapping("/reserveNonPaye/{date}")
-    int consulterBilletsReserveNonPaye(@PathVariable Date date){
+    int consulterBilletsReserveNonPaye(@PathVariable LocalDate date){
         return this.jaugeParcService.consulterNbReserveNonPaye(date);
     }
 

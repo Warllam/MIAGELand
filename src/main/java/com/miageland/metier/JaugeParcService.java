@@ -10,6 +10,7 @@ import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Service
@@ -35,7 +36,7 @@ public class JaugeParcService {
      * @param date souhaitée
      * @return le nombre de billets vendus pour une date/jauge Parc
      */
-    public int consulterVentesJour (Date date) {
+    public int consulterVentesJour (LocalDate date) {
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsVendus();
     }
@@ -45,13 +46,13 @@ public class JaugeParcService {
      * @param nbVisiteurMax le nombre de visiteurs max
      * @param date la date pour la jauge
      */
-    public JaugeParc setJaugeParcMax(int nbVisiteurMax, Date date){
+    public JaugeParc setJaugeParcMax(int nbVisiteurMax, LocalDate date){
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         jaugeParc.setJaugeMaximum(nbVisiteurMax);
         return jaugeParc;
     }
 
-    public int getJaugeParcMax(Date date){
+    public int getJaugeParcMax(LocalDate date){
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getJaugeMaximum();
     }
@@ -60,7 +61,7 @@ public class JaugeParcService {
      * @param date souhaitée
      * @return les recettes du jour
      */
-    public int recetteQuotidienne(Date date) {
+    public int recetteQuotidienne(LocalDate date) {
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getRecetteJour();
     }
@@ -69,7 +70,7 @@ public class JaugeParcService {
      * @param date souhaitée
      * @return le nombre de billets annulés sur la journée
      */
-    public int consulterBilletsAnnules(Date date){
+    public int consulterBilletsAnnules(LocalDate date){
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsAnnules();
     }
@@ -78,7 +79,7 @@ public class JaugeParcService {
      * @param date souhaitée
      * @return le nombre de reservations qui ne sont pas encore payées
      */
-    public int consulterNbReserveNonPaye(Date date){
+    public int consulterNbReserveNonPaye(LocalDate date){
         JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
         return jaugeParc.getBilletsReserveNonPaye();
     }
@@ -93,5 +94,10 @@ public class JaugeParcService {
             throw new VisiteurNotFoundException(idVisiteur);
         }
         return visiteur.nombreVisites();
+    }
+
+    public void incrementerBilletsVendus(LocalDate date){
+        JaugeParc jaugeParc = jaugeParcRepository.findById(date).orElseThrow(() -> new JaugeParcNotFoundException(date));
+        jaugeParc.setBilletsVendus(jaugeParc.getBilletsVendus() + 1);
     }
 }

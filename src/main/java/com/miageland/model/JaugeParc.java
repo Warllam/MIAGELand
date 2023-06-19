@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -12,14 +13,14 @@ import java.util.Date;
 @Setter
 public class JaugeParc {
     @Id
-    private Date date;
+    private LocalDate date;
     private int billetsVendus;
     private int jaugeMaximum;
     private int recetteJour;
     private int billetsAnnules;
     private int billetsReserveNonPaye;
 
-    public JaugeParc(Date date){
+    public JaugeParc(LocalDate date){
         this.date = date;
         this.billetsVendus = 0;
         this.jaugeMaximum = 10;
