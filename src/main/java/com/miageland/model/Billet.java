@@ -19,6 +19,7 @@ public class Billet {
     private EtatBillet etatBillet;
     private Date dateVente;
     private Date dateVisite;
+    private boolean estPaye;
     @ManyToOne
     @JoinColumn(name = "visiteur_id")
     @JsonBackReference
