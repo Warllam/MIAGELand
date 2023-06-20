@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Contrôleur REST pour gérer les employés.
+ */
 @RestController
 @RequestMapping("/employe")
 public class EmployeController {
@@ -19,9 +22,10 @@ public class EmployeController {
     private EmployeService employeService;
 
     /**
-     * Endpoint dajout employé
-     * @param employe
-     * @return
+     * Endpoint pour créer un employé.
+     *
+     * @param employe les informations de l'employé à créer
+     * @return la réponse HTTP avec le nouvel employé créé
      */
     @PostMapping(consumes = "application/json;charset=UTF-8")
     public ResponseEntity<Employe> createEmploye(@RequestBody EmployeDTO employe) {
@@ -29,12 +33,11 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(e);
     }
 
-
-
     /**
-     * Endpoint suppression employé
-     * @param id
-     * @return
+     * Endpoint pour supprimer un employé spécifié par son identifiant.
+     *
+     * @param id l'identifiant de l'employé à supprimer
+     * @return la réponse HTTP avec le statut OK
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -43,10 +46,11 @@ public class EmployeController {
     }
 
     /**
-     * Endpoint update employe
-     * @param id
-     * @param employe
-     * @return l'employe mis a jour
+     * Endpoint pour mettre à jour un employé spécifié par son identifiant.
+     *
+     * @param id      l'identifiant de l'employé à mettre à jour
+     * @param employe les informations de l'employé mises à jour
+     * @return la réponse HTTP avec l'employé mis à jour
      */
     @PutMapping("/{id}")
     public ResponseEntity<Employe> updateEmployee(@PathVariable Long id, @RequestBody EmployeDTO employe) {
@@ -54,8 +58,9 @@ public class EmployeController {
     }
 
     /**
-     * recup liste employee
-     * @return liste employee
+     * Endpoint pour récupérer la liste de tous les employés.
+     *
+     * @return la réponse HTTP avec la liste de tous les employés
      */
     @GetMapping
     public ResponseEntity<List<Employe>> getAllEmployees() {
@@ -63,9 +68,10 @@ public class EmployeController {
     }
 
     /**
-     * recup employee avec son id
-     * @param id
-     * @return employee d'id id
+     * Endpoint pour récupérer un employé spécifié par son identifiant.
+     *
+     * @param id l'identifiant de l'employé à récupérer
+     * @return la réponse HTTP avec l'employé correspondant à l'identifiant
      */
     @GetMapping("/{id}")
     public ResponseEntity<Employe> getEmployeeById(@PathVariable Long id) {
@@ -73,99 +79,46 @@ public class EmployeController {
     }
 
     /**
-     * connexion et def role session
-     * @param mail
-     * @param session
-     * @return ok
+     * Endpoint pour connecter un employé en utilisant son adresse e-mail et définir le rôle de la session.
+     *
+     * @param employeParameter les informations de l'employé pour la connexion
+     * @param session          la session HTTP
+     * @return la réponse HTTP avec un message de connexion réussie
      */
     @PostMapping("/connexion")
-    public ResponseEntity<String> loginEmployeeByMail(@RequestBody EmployeDTO employeParameter, HttpSession session){
+    public ResponseEntity<String> loginEmployeeByMail(@RequestBody EmployeDTO employeParameter, HttpSession session) {
         String mail = employeParameter.getMail();
-        Employe employe=this.employeService.getEmployeByMail(mail);
-        /*return employe;
-        switch (employe.getRole()) {
-            case ADMINISTRATEUR:
-                session.setAttribute("Role",Role.ADMINISTRATEUR);
-                break;
-            case GERANT:
-                session.setAttribute("Role",Role.GERANT);
-                break;
-            //par defaut on attribue le role d'employee
-            default:
-                session.setAttribute("Role",Role.EMPLOYEE);
-                break;
-        }*/
-        session.setAttribute("Role",employe.getId() );
-        return ResponseEntity.ok("connexion ok avec le mail : "+mail);
+        Employe employe = this.employeService.getEmployeByMail(mail);
+        session.setAttribute("Role", employe.getId());
+        return ResponseEntity.ok("Connexion réussie avec l'e-mail : " + mail);
     }
 
-    @PostMapping("/connexion/{id}")
-    public ResponseEntity<String> loginEmployeeByID(@PathVariable Long id, HttpSession session){
-        Employe employe=this.employeService.getEmployeById(id);
-        session.setAttribute("Role",employe.getRole() );
-        return ResponseEntity.ok("connexion ok avec l'id : "+ id + " de role "+ employe.getRole());
-    }
-    //fonction supp
     /**
-     * recup nom employee avec id
-     * @param id
-     * @return nom employee
+     * Endpoint pour connecter un employé en utilisant son identifiant et définir le rôle de la session.
+     *
+     * @param id      l'identifiant de l'employé pour la connexion
+     * @param session la session HTTP
+     * @return la réponse HTTP avec un message de connexion réussie
+     */
+    @PostMapping("/connexion/{id}")
+    public ResponseEntity<String> loginEmployeeByID(@PathVariable Long id, HttpSession session) {
+        Employe employe = this.employeService.getEmployeById(id);
+        session.setAttribute("Role", employe.getRole());
+        return ResponseEntity.ok("Connexion réussie avec l'identifiant : " + id + " de rôle " + employe.getRole());
+    }
+
+    /**
+     * Endpoint pour récupérer le nom de l'employé spécifié par son identifiant.
+     *
+     * @param id l'identifiant de l'employé
+     * @return la réponse HTTP avec le nom de l'employé correspondant à l'identifiant
      */
     @GetMapping("/{id}/name")
     public ResponseEntity<String> getEmployeeNameById(@PathVariable Long id) {
-        // Récup employé
         Employe employe = employeService.getEmployeById(id);
-
-        // existe ?
         if (employe == null) {
-            //"Employé non trouvé"
-            return null;
+            return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(employe.getNom());
     }
-
-    /**
-     * recup role employee
-     * @param id
-     * @param role
-     * @return l'employee modifié
-     */
-    /*@PutMapping("/employee/{id}/role")
-    public ResponseEntity<Employe> updateEmployeeRole(@PathVariable int id, @PathVariable Role role) {
-        // Recup employé
-        Employe employee = employeeService.getEmployeeById(id);
-
-        // existe ?
-        if (employee == null) {
-            return null;
-        }
-
-        // Modifier le rôle de l'employé
-        employee.setRole(role);
-
-        // Maj employé
-        Employe updatedEmployee = employeeService.updateEmployee(id ,employee);
-        return ResponseEntity.ok(updatedEmployee);
-    }
-*/
-    /**
-     * recup role
-     * @param id
-     * @return role
-     */
-   /* @GetMapping("/employee/{id}/role")
-    public ResponseEntity<Role> getEmployeeRole(@PathVariable int id) {
-        // Recup employé p
-        Employe employee = employeeService.getEmployeeById(id);
-
-        // existe ?
-        if (employee == null) {
-            return null;
-        }
-        // Recup role
-        Role role = employee.getRole();
-       return ResponseEntity.ok(role);
-    }
-*/
 }

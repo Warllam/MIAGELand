@@ -9,33 +9,54 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+
+ Service de gestion des visiteurs.
+ */
 @Service
 public class VisiteurService {
 
     @Autowired
     private VisiteurRepository visiteurRepository;
 
-    public VisiteurService(){
+    /**
 
-    }
-
-    public List<Visiteur> getAllVisiteurs(){
+     Récupère tous les visiteurs.
+     @return la liste de tous les visiteurs
+     */
+    public List<Visiteur> getAllVisiteurs() {
         return this.visiteurRepository.findAll();
     }
+    /**
 
-    public Visiteur getVisiteurById(Long id){
+     Récupère un visiteur en fonction de son identifiant.
+     @param id l'identifiant du visiteur
+     @return le visiteur correspondant
+     @throws VisiteurNotFoundException si le visiteur n'est pas trouvé
+     */
+    public Visiteur getVisiteurById(Long id) {
         return this.visiteurRepository.getReferenceById(id);
     }
+    /**
 
-    public void deleteVisiteurById(Long id){
+     Supprime un visiteur en fonction de son identifiant.
+     @param id l'identifiant du visiteur à supprimer
+     @throws VisiteurNotFoundException si le visiteur n'est pas trouvé
+     */
+    public void deleteVisiteurById(Long id) {
         if (visiteurRepository.existsById(id)) {
             visiteurRepository.deleteById(id);
         } else {
             throw new VisiteurNotFoundException(id);
         }
     }
+    /**
 
-    public Visiteur newVisiteur(VisiteurDTO newVisiteurParameter){
+     Crée un nouveau visiteur en fonction des paramètres spécifiés.
+     @param newVisiteurParameter les paramètres du nouveau visiteur
+     @return le visiteur créé
+     */
+    public Visiteur newVisiteur(VisiteurDTO newVisiteurParameter) {
         Visiteur visiteur = new Visiteur(newVisiteurParameter.getNom(), newVisiteurParameter.getPrenom(), newVisiteurParameter.getMail());
         this.visiteurRepository.save(visiteur);
         return visiteur;

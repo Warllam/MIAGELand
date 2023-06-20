@@ -11,52 +11,127 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
-
+/**
+ * Contrôleur REST pour les opérations liées aux billets.
+ */
 @RestController
 @RequestMapping("/billets")
 public class BilletController {
 
-    private final BilletRepository repository;
     private final BilletService billetService;
 
-    public BilletController(BilletRepository repository, BilletService billetService) {
-        this.repository = repository;
+    /**
+     * Constructeur du contrôleur BilletController.
+     *
+     * @param billetService le service de gestion des billets
+     */
+    public BilletController(BilletService billetService) {
         this.billetService = billetService;
     }
 
+    /**
+     * Récupère tous les billets.
+     *
+     * @return la liste de tous les billets existants
+     */
     @GetMapping
     List<Billet> all() {
-        List<Billet> billets = repository.findAll();
-        return billets;
+        return this.billetService.getAllBillets();
     }
 
+    /**
+     * Récupère un billet par son ID.
+     *
+     * @param id l'ID du billet à récupérer
+     * @return le billet correspondant à l'ID
+     * @throws BilletException si le billet n'a pas été trouvé
+     */
     @GetMapping("{id}")
-    Billet getBilletById(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> new BilletException("Could not find billet " + id));
+    ResponseEntity<Billet> getBilletById(@PathVariable Long id) {
+        try {
+            Billet billet = this.billetService.getBilletById(id);
+            return ResponseEntity.ok(billet);
+        } catch (BilletException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+    /**
+     * Récupère tous les billets d'un visiteur spécifique.
+     *
+     * @param idVisiteur l'ID du visiteur
+     * @return la liste des billets du visiteur
+     */
     @GetMapping("user/{idVisiteur}")
     List<Billet> allByIdVisiteur(@PathVariable Long idVisiteur) {
-        List<Billet> billets = repository.findByVisiteurId(idVisiteur);
-        return billets;
+        return this.billetService.getAllBilletsByVisiteur(idVisiteur);
     }
 
+    /**
+     * Crée un nouveau billet.
+     *
+     * @param newBilletParameter les paramètres du billet à créer
+     * @return le billet créé
+     * @throws ParseException   en cas d'erreur lors de l'analyse des dates
+     * @throws BilletException  si les paramètres du billet sont invalides
+     */
     @PostMapping(consumes = "application/json;charset=UTF-8")
-    Billet newBillet(@RequestBody BilletDTO newBilletParameter) throws ParseException {
-        Billet billet = this.billetService.newBillet(newBilletParameter);
-        return billet;
+    ResponseEntity<?> newBillet(@RequestBody BilletDTO newBilletParameter) throws ParseException {
+        try {
+            Billet billet = this.billetService.newBillet(newBilletParameter);
+            return ResponseEntity.ok(billet);
+        } catch (BilletException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
+    /**
+     * Annule un billet.
+     *
+     * @param id l'ID du billet à annuler
+     * @return le message de confirmation d'annulation
+     * @throws BilletException          si le billet n'a pas été trouvé
+     * @throws IllegalStateException si l'état du billet est invalide pour l'annulation
+     */
     @PutMapping("{id}/annuler")
-    String deleteBillet(@PathVariable Long id) {
-        return this.billetService.annulerBillet(id);
+    ResponseEntity<String> deleteBillet(@PathVariable Long id) {
+        try {
+            String message = this.billetService.annulerBillet(id);
+            return ResponseEntity.ok(message);
+        } catch (BilletException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
+    /**
+     * Effectue le paiement d'un billet.
+     *
+     * @param id l'ID du billet à payer
+     * @return le message de confirmation de paiement
+     * @throws BilletException          si le billet n'a pas été trouvé
+     * @throws IllegalStateException si le billet est déjà payé
+     */
     @PutMapping("{id}/paiement")
-    String payerBillet(@PathVariable Long id) {
-        return this.billetService.payerBillet(id);
+    ResponseEntity<String> payerBillet(@PathVariable Long id) {
+        try {
+            String response = this.billetService.payerBillet(id);
+            return ResponseEntity.ok(response);
+        } catch (BilletException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
+    /**
+     * Valide un billet.
+     *
+     * @param id l'ID du billet à valider
+     * @return le message de confirmation de validation
+     * @throws BilletException si le billet n'a pas été trouvé ou s'il n'est pas valide
+     */
     @PutMapping("{id}/valider")
     ResponseEntity<String> validerBillet(@PathVariable Long id) {
         try {
