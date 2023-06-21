@@ -1,11 +1,15 @@
 package com.miageland.exposition;
 
 import com.miageland.DTO.JaugeParcDTO;
+import com.miageland.MyUtils;
 import com.miageland.exception.JaugeParcNotFoundException;
 import com.miageland.metier.JaugeParcService;
 import com.miageland.model.JaugeParc;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,8 +37,13 @@ public class JaugeParcController {
      * @return la liste de toutes les jauges de parc
      */
     @GetMapping
-    List<JaugeParc> all() {
-        return this.jaugeParcService.getAllJaugeParc();
+    ResponseEntity<List<JaugeParc>> all(HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            return ResponseEntity.ok(this.jaugeParcService.getAllJaugeParc());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -45,9 +54,14 @@ public class JaugeParcController {
      * @throws JaugeParcNotFoundException si la jauge de parc n'a pas été trouvée
      */
     @GetMapping("/{date}")
-    JaugeParc oneDate(@PathVariable LocalDate date) {
-        JaugeParc jaugeParc = this.jaugeParcService.getJaugeParc(date);
-        return jaugeParc;
+    ResponseEntity<JaugeParc> oneDate(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            JaugeParc jaugeParc = this.jaugeParcService.getJaugeParc(date);
+            return ResponseEntity.ok(jaugeParc);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -57,9 +71,14 @@ public class JaugeParcController {
      * @return la jauge de parc créée
      */
     @PostMapping(consumes = "application/json;charset=UTF-8")
-    JaugeParc newJaugeParc(@RequestBody JaugeParcDTO newJaugeParcParameter) {
-        JaugeParc jaugeParc = this.jaugeParcService.newJaugeParc(newJaugeParcParameter);
-        return jaugeParc;
+    ResponseEntity<JaugeParc> newJaugeParc(@RequestBody JaugeParcDTO newJaugeParcParameter, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            JaugeParc jaugeParc = this.jaugeParcService.newJaugeParc(newJaugeParcParameter);
+            return ResponseEntity.ok(jaugeParc);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -69,8 +88,14 @@ public class JaugeParcController {
      * @return le nombre de billets vendus pour la journée
      */
     @GetMapping("/ventesJour/{date}")
-    int billetsVendusJour(@PathVariable LocalDate date) {
-        return this.jaugeParcService.consulterVentesJour(date);
+    ResponseEntity<Integer> billetsVendusJour(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            int billetsVendus = this.jaugeParcService.consulterVentesJour(date);
+            return ResponseEntity.ok(billetsVendus);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -80,8 +105,13 @@ public class JaugeParcController {
      * @return la jauge de capacité maximale pour la journée
      */
     @GetMapping("/jaugeMax/{date}")
-    int jaugeCapaciteMax(@PathVariable LocalDate date) {
-        return this.jaugeParcService.getJaugeParcMax(date);
+    ResponseEntity<Integer> jaugeCapaciteMax(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            return ResponseEntity.ok(this.jaugeParcService.getJaugeParcMax(date));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -92,10 +122,16 @@ public class JaugeParcController {
      * @return la jauge de parc mise à jour
      */
     @PutMapping("/jaugeMax/{date}")
-    public ResponseEntity<JaugeParc> updateJaugeParcCapacite(@PathVariable LocalDate date, @RequestParam int maJauge) {
-        this.jaugeParcService.setJaugeParcMax(maJauge, date);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<JaugeParc> updateJaugeParcCapacite(@PathVariable LocalDate date, @RequestParam int maJauge, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            this.jaugeParcService.setJaugeParcMax(maJauge, date);
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
+
 
     /**
      * Récupère le montant total de la recette pour une journée donnée.
@@ -104,8 +140,14 @@ public class JaugeParcController {
      * @return le montant total de la recette pour la journée
      */
     @GetMapping("/recette/{date}")
-    int recetteJour(@PathVariable LocalDate date) {
-        return this.jaugeParcService.getAndCalculateRecetteJour(date);
+    public ResponseEntity<Integer> recetteJour(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            int recette = this.jaugeParcService.getAndCalculateRecetteJour(date);
+            return ResponseEntity.ok(recette);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -115,9 +157,16 @@ public class JaugeParcController {
      * @return le nombre de billets annulés pour la journée
      */
     @GetMapping("/annulations/{date}")
-    int consulterBilletsAnnules(@PathVariable LocalDate date) {
-        return this.jaugeParcService.consulterBilletsAnnules(date);
+    public ResponseEntity<Integer> consulterBilletsAnnules(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            int billetsAnnules = this.jaugeParcService.consulterBilletsAnnules(date);
+            return ResponseEntity.ok(billetsAnnules);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
+
 
     /**
      * Récupère le nombre de billets réservés mais non payés pour une journée donnée.
@@ -126,9 +175,16 @@ public class JaugeParcController {
      * @return le nombre de billets réservés mais non payés pour la journée
      */
     @GetMapping("/reserveNonPaye/{date}")
-    int consulterBilletsReserveNonPaye(@PathVariable LocalDate date) {
-        return this.jaugeParcService.consulterNbReserveNonPaye(date);
+    public ResponseEntity<Integer> consulterBilletsReserveNonPaye(@PathVariable LocalDate date, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            int billetsReserveNonPaye = this.jaugeParcService.consulterNbReserveNonPaye(date);
+            return ResponseEntity.ok(billetsReserveNonPaye);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
+
 
     /**
      * Récupère le nombre de visites effectuées par un visiteur spécifique.
@@ -137,7 +193,13 @@ public class JaugeParcController {
      * @return le nombre de visites effectuées par le visiteur
      */
     @GetMapping("/nbVisiteVisiteur/{idVisiteur}")
-    int consulterNbVisitesVisiteur(@PathVariable Long idVisiteur) {
-        return this.jaugeParcService.nbVisiteVisiteur(idVisiteur);
+    public ResponseEntity<Integer> consulterNbVisitesVisiteur(@PathVariable Long idVisiteur, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+            int nbVisites = this.jaugeParcService.nbVisiteVisiteur(idVisiteur);
+            return ResponseEntity.ok(nbVisites);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }

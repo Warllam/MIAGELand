@@ -12,13 +12,11 @@ public class VisiteurDTO {
     private String prenom;
     @JsonIgnoreProperties
     private String mail;
-    @JsonIgnoreProperties
-    private Billet billetsVisiteur;
-    public VisiteurDTO(String pNom, String pPrenom, String pMail, Billet pBilletsVisiteur){
+
+    public VisiteurDTO(String pNom, String pPrenom, String pMail){
         this.nom = pNom;
         this.prenom = pPrenom;
         this.mail = pMail;
-        this.billetsVisiteur = pBilletsVisiteur;
     }
 
 }

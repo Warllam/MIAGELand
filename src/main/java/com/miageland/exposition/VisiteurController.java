@@ -1,9 +1,16 @@
 package com.miageland.exposition;
 
+import com.miageland.DTO.EmployeDTO;
 import com.miageland.DTO.VisiteurDTO;
 import com.miageland.metier.VisiteurService;
+import com.miageland.model.Employe;
 import com.miageland.model.Visiteur;
+import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -58,7 +65,26 @@ public class VisiteurController {
      */
     @PostMapping(value = "/visiteurs", consumes = "application/json;charset=UTF-8")
     Visiteur newVisiteur(@RequestBody VisiteurDTO newVisiteurParameter) {
-        Visiteur visiteur = this.visiteurService.newVisiteur(newVisiteurParameter);
-        return visiteur;
+        try{
+            Visiteur visiteur = this.visiteurService.newVisiteur(newVisiteurParameter);
+            return visiteur;
+        }
+        catch (EntityExistsException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint pour connecter un employé en utilisant son adresse e-mail et définir le rôle de la session.
+     *
+     * @param visiteurParameter les informations de l'employé pour la connexion
+     * @param session          la session HTTP
+     * @return la réponse HTTP avec un message de connexion réussie
+     */
+    @PostMapping("/visiteurs/connexion")
+    public ResponseEntity<String> loginVisteurByMail(@RequestBody VisiteurDTO visiteurParameter, HttpSession session) {
+        String mail = visiteurParameter.getMail();
+        Visiteur visiteur = this.visiteurService.getVisiteurByMail(mail);
+        return ResponseEntity.ok("Connexion réussie avec l'e-mail : " + mail);
     }
 }

@@ -4,9 +4,9 @@ import com.miageland.DAO.AttractionRepository;
 import com.miageland.DTO.AttractionDTO;
 import com.miageland.exception.AttractionNotFoundException;
 import com.miageland.model.Attraction;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
@@ -25,6 +25,7 @@ public class AttractionService {
      * @return l'attraction créée
      */
     public Attraction newAttraction(AttractionDTO newAttractionParameter) {
+
         Attraction attraction = new Attraction(newAttractionParameter.getNom(), newAttractionParameter.isEstOuverte());
         this.attractionRepository.save(attraction);
         return attraction;
@@ -57,6 +58,8 @@ public class AttractionService {
      * @throws AttractionNotFoundException si l'attraction n'est pas trouvée
      */
     public Attraction updateAttraction(Long id, boolean estOuverte) throws AttractionNotFoundException {
+
+
         Attraction attraction = attractionRepository.findById(id).orElseThrow(() -> new AttractionNotFoundException(id));
         attraction.setEstOuverte(estOuverte);
         this.attractionRepository.save(attraction);
@@ -71,8 +74,11 @@ public class AttractionService {
      * @throws AttractionNotFoundException si l'attraction n'est pas trouvée
      */
     public Attraction deleteAttraction(Long id) throws AttractionNotFoundException {
+
         Attraction attraction = attractionRepository.findById(id).orElseThrow(() -> new AttractionNotFoundException(id));
         this.attractionRepository.delete(attraction);
         return attraction;
     }
+
+
 }

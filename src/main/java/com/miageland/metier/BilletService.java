@@ -1,24 +1,15 @@
 package com.miageland.metier;
 
-import com.miageland.DAO.AttractionRepository;
 import com.miageland.DAO.BilletRepository;
-import com.miageland.DAO.JaugeParcRepository;
-import com.miageland.DAO.VisiteurRepository;
 import com.miageland.DTO.BilletDTO;
 import com.miageland.exception.BilletException;
 import com.miageland.model.Billet;
 import com.miageland.model.EtatBillet;
 import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +21,7 @@ public class BilletService {
     @Autowired
     private VisiteurService visiteurService;
     @Autowired
+    @Lazy
     private JaugeParcService jaugeParcService;
 
     /**

@@ -3,11 +3,13 @@ package com.miageland.metier;
 import com.miageland.DAO.VisiteurRepository;
 import com.miageland.DTO.VisiteurDTO;
 import com.miageland.exception.VisiteurNotFoundException;
+import com.miageland.model.Employe;
 import com.miageland.model.Visiteur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
 
@@ -61,4 +63,18 @@ public class VisiteurService {
         this.visiteurRepository.save(visiteur);
         return visiteur;
     }
+
+    public boolean existVisiteurByEmail(String mail) {
+        Optional<Visiteur> visiteur = visiteurRepository.findByMail(mail);
+        return visiteur.isPresent();
+    }
+
+    public Visiteur getVisiteurByMail(String mail) {
+        if(existVisiteurByEmail(mail)) {
+            return visiteurRepository.findByMail(mail).get();
+        }else{
+            throw new VisiteurNotFoundException();
+        }
+    }
+
 }

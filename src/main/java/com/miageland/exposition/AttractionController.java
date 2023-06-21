@@ -2,12 +2,15 @@ package com.miageland.exposition;
 
 import com.miageland.DAO.AttractionRepository;
 import com.miageland.DTO.AttractionDTO;
+import com.miageland.MyUtils;
 import com.miageland.exception.AttractionNotFoundException;
 import com.miageland.metier.AttractionService;
 import com.miageland.model.Attraction;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -41,9 +44,16 @@ public class AttractionController {
      * @return la réponse HTTP avec la nouvelle attraction créée
      */
     @PostMapping(consumes = "application/json;charset=UTF-8")
-    public ResponseEntity<Attraction> createNewAttraction(@RequestBody AttractionDTO newAttractionParameter) {
-        Attraction attraction = attractionService.newAttraction(newAttractionParameter);
-        return ResponseEntity.status(HttpStatus.CREATED).body(attraction);
+    public ResponseEntity<Attraction> createNewAttraction(@RequestBody AttractionDTO newAttractionParameter,  HttpSession session) {
+        try{
+            MyUtils.checkUserRoleGerantAdministrateur(session);
+            Attraction attraction = attractionService.newAttraction(newAttractionParameter);
+            return ResponseEntity.status(HttpStatus.CREATED).body(attraction);
+        } catch (AttractionNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     /**
@@ -54,11 +64,14 @@ public class AttractionController {
      * @return la réponse HTTP avec l'attraction mise à jour
      */
     @PutMapping("/{id}/setOuverture")
-    public ResponseEntity<Attraction> updateAttractionOuverture(@PathVariable Long id, @RequestParam("estOuverte") boolean estOuverte) {
-        try {
+    public ResponseEntity<Attraction> updateAttractionOuverture(@PathVariable Long id, @RequestParam("estOuverte") boolean estOuverte, HttpSession session) {
+        try{
+            MyUtils.checkUserRoleGerantAdministrateur(session);
             return ResponseEntity.ok(this.attractionService.updateAttraction(id, estOuverte));
         } catch (AttractionNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
@@ -79,12 +92,15 @@ public class AttractionController {
      * @return la réponse HTTP avec le statut OK si l'attraction a été supprimée avec succès, sinon le statut NotFound
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Attraction> deleteAttraction(@PathVariable Long id) {
-        try {
+    public ResponseEntity<Attraction> deleteAttraction(@PathVariable Long id,  HttpSession session) {
+        try{
+            MyUtils.checkUserRoleGerantAdministrateur(session);
             attractionService.deleteAttraction(id);
             return ResponseEntity.ok().build();
         } catch (AttractionNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 

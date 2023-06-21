@@ -4,11 +4,14 @@ import com.miageland.DTO.EmployeDTO;
 import com.miageland.metier.EmployeService;
 import com.miageland.model.Employe;
 import com.miageland.model.Role;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,9 +31,15 @@ public class EmployeController {
      * @return la réponse HTTP avec le nouvel employé créé
      */
     @PostMapping(consumes = "application/json;charset=UTF-8")
-    public ResponseEntity<Employe> createEmploye(@RequestBody EmployeDTO employe) {
-        Employe e = employeService.newEmploye(employe);
-        return ResponseEntity.status(HttpStatus.CREATED).body(e);
+    public ResponseEntity<Employe> createEmploye(@RequestBody EmployeDTO employe,  HttpSession session) {
+        try {
+            Employe e = employeService.newEmploye(employe, session);
+            return ResponseEntity.status(HttpStatus.CREATED).body(e);
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (EntityExistsException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
     }
 
     /**
@@ -40,9 +49,18 @@ public class EmployeController {
      * @return la réponse HTTP avec le statut OK
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        employeService.deleteEmploye(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id, @CookieValue(value = "user") String gerantEmail) {
+        try {
+            if (!this.employeService.getEmployeByMail(gerantEmail).getRole().equals(Role.GERANT)){
+                throw new IllegalAccessException("Vous devez être gérant pour créer un employé.");
+            }
+             employeService.deleteEmploye(id);
+             return ResponseEntity.ok().build();
+        } catch (IllegalAccessException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     /**
@@ -89,7 +107,7 @@ public class EmployeController {
     public ResponseEntity<String> loginEmployeeByMail(@RequestBody EmployeDTO employeParameter, HttpSession session) {
         String mail = employeParameter.getMail();
         Employe employe = this.employeService.getEmployeByMail(mail);
-        session.setAttribute("Role", employe.getId());
+        session.setAttribute("roleUser", employe.getRole());
         return ResponseEntity.ok("Connexion réussie avec l'e-mail : " + mail);
     }
 
@@ -103,7 +121,7 @@ public class EmployeController {
     @PostMapping("/connexion/{id}")
     public ResponseEntity<String> loginEmployeeByID(@PathVariable Long id, HttpSession session) {
         Employe employe = this.employeService.getEmployeById(id);
-        session.setAttribute("Role", employe.getRole());
+        session.setAttribute("roleUser", employe.getRole());
         return ResponseEntity.ok("Connexion réussie avec l'identifiant : " + id + " de rôle " + employe.getRole());
     }
 

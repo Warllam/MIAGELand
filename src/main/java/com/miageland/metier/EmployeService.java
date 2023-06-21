@@ -2,10 +2,14 @@ package com.miageland.metier;
 
 import com.miageland.DAO.EmployeRepository;
 import com.miageland.DTO.EmployeDTO;
+import com.miageland.MyUtils;
 import com.miageland.model.Employe;
 import com.miageland.model.Role;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +49,9 @@ public class EmployeService {
      * @param newEmployee
      * @return l'employee créé et sauvegardé
      */
-    public Employe newEmploye(EmployeDTO newEmployee) {
+    public Employe newEmploye(EmployeDTO newEmployee, HttpSession session){
+        MyUtils.checkUserRoleGerant(session);
+
         Employe e;
         switch (newEmployee.getRole()) {
             case "ADMINISTRATEUR":
@@ -63,6 +69,33 @@ public class EmployeService {
         return e;
         //return "Création ok";
     }
+
+    /**
+     * création d'un employee
+     * @param mail
+     * @return l'employee créé et sauvegardé
+     */
+    public Employe newEmploye(String nom, String prenom, String mail, Role role) {
+
+        Employe e;
+        switch (role.toString()) {
+            case "ADMINISTRATEUR":
+                e = new Employe(nom, prenom, mail, role);
+                break;
+            case "GERANT":
+                e = new Employe(nom, prenom, mail, role);
+                break;
+            //par defaut on attribue le role d'employee
+            default:
+                e = new Employe(nom, prenom, mail,role);
+                break;
+        }
+        this.employeRepository.save(e);
+        return e;
+        //return "Création ok";
+    }
+
+
 
 
 
@@ -121,5 +154,4 @@ public class EmployeService {
        Employe employee = this.employeRepository.getEmployeByMail(mail);
         return employee;
     }
-
 }

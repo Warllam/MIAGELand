@@ -17,11 +17,5 @@ public class EmployeDTO {
     @JsonIgnoreProperties
     private String role;
 
-    /*public EmployeeDTO(int id, String nom, String prenom, String mail, Role role) {
-        this.id = id;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.mail = mail;
-        this.role = role;
-    }*/
+
 }
