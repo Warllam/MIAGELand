@@ -83,6 +83,7 @@ public class VisiteurController {
      */
     @PostMapping("/visiteurs/connexion")
     public ResponseEntity<String> loginVisteurByMail(@RequestBody VisiteurDTO visiteurParameter, HttpSession session) {
+        session.setAttribute("roleUser", null);
         String mail = visiteurParameter.getMail();
         Visiteur visiteur = this.visiteurService.getVisiteurByMail(mail);
         return ResponseEntity.ok("Connexion réussie avec l'e-mail : " + mail);

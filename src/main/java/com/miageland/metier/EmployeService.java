@@ -49,8 +49,7 @@ public class EmployeService {
      * @param newEmployee
      * @return l'employee créé et sauvegardé
      */
-    public Employe newEmploye(EmployeDTO newEmployee, HttpSession session){
-        MyUtils.checkUserRoleGerant(session);
+    public Employe newEmploye(EmployeDTO newEmployee){
 
         Employe e;
         switch (newEmployee.getRole()) {

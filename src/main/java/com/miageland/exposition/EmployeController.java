@@ -1,6 +1,7 @@
 package com.miageland.exposition;
 
 import com.miageland.DTO.EmployeDTO;
+import com.miageland.MyUtils;
 import com.miageland.metier.EmployeService;
 import com.miageland.model.Employe;
 import com.miageland.model.Role;
@@ -33,7 +34,8 @@ public class EmployeController {
     @PostMapping(consumes = "application/json;charset=UTF-8")
     public ResponseEntity<Employe> createEmploye(@RequestBody EmployeDTO employe,  HttpSession session) {
         try {
-            Employe e = employeService.newEmploye(employe, session);
+            MyUtils.checkUserRoleGerant(session);
+            Employe e = employeService.newEmploye(employe);
             return ResponseEntity.status(HttpStatus.CREATED).body(e);
         } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
@@ -49,17 +51,14 @@ public class EmployeController {
      * @return la réponse HTTP avec le statut OK
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id, @CookieValue(value = "user") String gerantEmail) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id, HttpSession session) {
         try {
-            if (!this.employeService.getEmployeByMail(gerantEmail).getRole().equals(Role.GERANT)){
-                throw new IllegalAccessException("Vous devez être gérant pour créer un employé.");
-            }
+            MyUtils.checkUserRoleGerant(session);
+
              employeService.deleteEmploye(id);
              return ResponseEntity.ok().build();
-        } catch (IllegalAccessException e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
@@ -71,8 +70,13 @@ public class EmployeController {
      * @return la réponse HTTP avec l'employé mis à jour
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Employe> updateEmployee(@PathVariable Long id, @RequestBody EmployeDTO employe) {
-        return ResponseEntity.ok(employeService.updateEmploye(id, employe));
+    public ResponseEntity<Employe> updateEmployee(@PathVariable Long id, @RequestBody EmployeDTO employe, HttpSession session) {
+        try {
+            MyUtils.checkUserRoleGerant(session);
+             return ResponseEntity.ok(employeService.updateEmploye(id, employe));
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        }
     }
 
     /**
