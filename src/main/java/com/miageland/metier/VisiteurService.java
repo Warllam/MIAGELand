@@ -5,6 +5,7 @@ import com.miageland.DTO.VisiteurDTO;
 import com.miageland.exception.VisiteurNotFoundException;
 import com.miageland.model.Employe;
 import com.miageland.model.Visiteur;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,9 @@ public class VisiteurService {
      @return le visiteur créé
      */
     public Visiteur newVisiteur(VisiteurDTO newVisiteurParameter) {
+        if(this.visiteurRepository.findByMail(newVisiteurParameter.getMail()).isPresent()){
+            throw new EntityExistsException();
+        }
         Visiteur visiteur = new Visiteur(newVisiteurParameter.getNom(), newVisiteurParameter.getPrenom(), newVisiteurParameter.getMail());
         this.visiteurRepository.save(visiteur);
         return visiteur;

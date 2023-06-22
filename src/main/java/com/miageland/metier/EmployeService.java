@@ -5,6 +5,7 @@ import com.miageland.DTO.EmployeDTO;
 import com.miageland.MyUtils;
 import com.miageland.model.Employe;
 import com.miageland.model.Role;
+import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,9 @@ public class EmployeService {
      * @return l'employee créé et sauvegardé
      */
     public Employe newEmploye(EmployeDTO newEmployee){
-
+        if(this.employeRepository.findByMail(newEmployee.getMail()).isPresent()){
+            throw new EntityExistsException();
+        }
         Employe e;
         switch (newEmployee.getRole()) {
             case "ADMINISTRATEUR":
@@ -75,7 +78,6 @@ public class EmployeService {
      * @return l'employee créé et sauvegardé
      */
     public Employe newEmploye(String nom, String prenom, String mail, Role role) {
-
         Employe e;
         switch (role.toString()) {
             case "ADMINISTRATEUR":

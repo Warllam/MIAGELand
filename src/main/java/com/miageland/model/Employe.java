@@ -13,6 +13,7 @@ public class Employe {
     @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String nom;
     private String prenom;
+
     private String mail;
     private Role role;
 
